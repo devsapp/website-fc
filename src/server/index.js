@@ -1,6 +1,6 @@
-import serverless from "@serverless-devs/fc-http";
-import express from "express";
-import path from "path";
+const serverless = require("@serverless-devs/fc-http");
+const express = require("express");
+const path = require("path");
 
 const startServer = (args) => {
   const app = express();
