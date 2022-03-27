@@ -20,8 +20,8 @@
   ],
   "scripts": {},
   "dependencies": {
-    "@serverless-devs/core": "latest",
-    "@serverless-devs/fc-http": "^0.0.7",
-    "express": "~4.16.1"
-  },
+    "@serverless-devs/core": "^0.1.32",
+    "koa": "^2.13.4",
+    "koa-static": "^5.0.0"
+  }
 }
