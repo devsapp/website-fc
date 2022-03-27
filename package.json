@@ -20,8 +20,6 @@
   ],
   "scripts": {},
   "dependencies": {
-    "@serverless-devs/core": "^0.1.32",
-    "koa": "^2.13.4",
-    "koa-static": "^5.0.0"
+    "@serverless-devs/core": "^0.1.32"
   }
 }
