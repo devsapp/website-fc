@@ -39,6 +39,7 @@ module.exports = async function index(inputs, args) {
   return lodash.merge(inputs, {
     props: {
       function: {
+        runtime: "custom",
         codeUri: path.join(__dirname, "./code"),
         customRuntimeConfig: {
           command: ["node"],
