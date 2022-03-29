@@ -21,21 +21,14 @@ module.exports = async function index(inputs, args) {
   fse.ensureDirSync(publicPath);
   fse.copySync(newCodeUri, publicPath);
   const index = lodash.get(args, "index", "index.html");
-  const str = `
-  const express = require("express");
-  const path = require("path");
-  const app = express();
-  const port = 9000;
-
-  app.use(express.static(path.join(__dirname, "public")));
-
-  app.get("/*", function (req, res) {
-    res.sendFile(path.join(__dirname, "public", "${index}"));
-  });
-
-  app.listen(port);
-  `;
-  fse.writeFileSync(path.join(__dirname, "./code/index.js"), str);
+  const indexData = fse.readFileSync(
+    path.join(__dirname, "template.js"),
+    "utf-8"
+  );
+  fse.writeFileSync(
+    path.join(__dirname, "./code/index.js"),
+    lodash.replace(indexData, "$index", index)
+  );
   return lodash.merge(inputs, {
     props: {
       function: {
