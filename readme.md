@@ -1,74 +1,127 @@
-# 组件开发说明
 
-> Serverless Devs 组件开发需要严格遵守 [Serverless Package Model](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/spec/zh/0.0.1/serverless_registry_model/readme.md) 中的 [组件模型规范](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/spec/zh/0.0.1/serverless_registry_model/3.registry_model.md#组件模型规范) 。在[组件模型规范](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/spec/zh/0.0.1/serverless_registry_model/3.registry_model.md#组件模型规范) 中有关于[组件模型元数据](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/spec/zh/0.0.1/serverless_registry_model/3.registry_model.md#组件模型元数据) 和[组件模型代码规范](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/spec/zh/0.0.1/serverless_registry_model/3.registry_model.md#组件模型代码规范) 的说明。
+# Website-fc Plugin
+![image](https://img.alicdn.com/imgextra/i1/O1CN01X9ucax1hNPxyaFLkb_!!6000000004265-2-tps-1810-686.png)
+<p align="center" class="flex justify-center">
+  <a href="https://nodejs.org/en/" class="ml-1">
+    <img src="https://img.shields.io/badge/node-%3E%3D%2010.8.0-brightgreen" alt="node.js version">
+  </a>
+  <a href="https://github.com/devsapp/website-fc/blob/master/LICENSE" class="ml-1">
+    <img src="https://img.shields.io/badge/License-MIT-green" alt="license">
+  </a>
+</p>
 
-> 🐵 温馨提示，在进行 Serverless Devs 的组件开发时，可能会遇到很多相对来说更为通用的能力，包括不限于：
-> - 获取用户的密钥信息
-> - 进行更规范的格式化输出
-> - 对用户的输入参数进行解析   
-> ......   
-> 这些内容都可以通过 Serverless Devs 所提供的 [Core包](https://github.com/Serverless-Devs/core) 进行提供，更多 [Core包](https://github.com/Serverless-Devs/core) 信息，可以参考 [Core包的开发文档](https://github.com/Serverless-Devs/core)
+本插件帮助您通过[Serverless-Devs](https://github.com/Serverless-Devs/Serverless-Devs)工具和[FC组件](https://github.com/devsapp/fc)，快速部署静态网站到阿里云函数计算平台。
 
-Serverless Devs的组件开发案例已经被集成到Serverless Devs命令行工具中，通过对Serverless Devs的命令行工具，可以进行空白组件项目的初始化，开发者只需要执行`s init`即可看到：
 
-```shell script
+- [快速开始](#快速开始)
+  - [插件作用](#插件作用)
+  - [插件使用](#插件使用)
+  - [操作案例](#操作案例)
+- [关于我们](#关于我们)
 
-🚀 Serverless Awesome: https://github.com/Serverless-Devs/package-awesome
+## 快速开始
 
-? Hello Serverless for Cloud Vendors (Use arrow keys or type to search)
-❯ Alibaba Cloud Serverless 
-  AWS Cloud Serverless 
-  Tencent Cloud Serverless 
-  Baidu Cloud Serverless 
-  Dev Template for Serverless Devs 
+### 插件作用
+#### 通过CDN+OSS部署
+通过[OSS组件](https://github.com/devsapp/oss)可以将静态资源快速部署到阿里云对象存储上，同时分发到CDN节点。不同地域的客户都能快速的访问对应的资源。
+
+![Images](https://img.alicdn.com/imgextra/i4/O1CN01yajAOr1qZd4TVVwCk_!!6000000005510-2-tps-928-468.png)
+
+
+上面的架构是比较推荐的最佳实践，能够保证高可用，和极致弹性，也是一个标准的Serverless架构。同时用户也能快速的访问它就近的资源，提供了最好的用户体验。
+
+
+#### 通过函数计算FC部署
+通过CDN+OSS的方式虽然在性能和弹性都做到了最优，但是有下面几种场景，用户会选择他的应用部署在函数计算上
+
+- 不希望太复杂的架构，前后端都部署在函数计算上
+- FullStack的框架，前后端都是一体化，前端部署在OSS有跨域的问题。如果要解决跨域的问题，又需要引入网关等组件，进一步带来了架构的复杂度
+- FaaS厂商一般都有免费额度，我的流量不高，部署在Faas足够用了
+
+
+### 插件使用
+`website-fc`本质是针对[FC组件](https://serverless-devs.com/fc/readme)进行增强。
+还是遵循FC组件的[Yaml规范](https://serverless-devs.com/fc/yaml/readme)，区别在于
+1. 在执行部署之前声明对应的插件`website-fc`
+```
+actions: # 自定义执行逻辑
+  pre-deploy: # 在deploy之前运行
+    - plugin: website-fc
+```
+2. 更改函数的[codeUri](https://serverless-devs.com/fc/yaml/function)为静态资源的本地地址
+```
+services:
+  website:
+    component: fc
+    actions: # 自定义执行逻辑
+      pre-deploy: # 在deploy之前运行
+        - plugin: ${path(..)}
+    props: #  组件的属性值
+      region: ${vars.region}
+      service: ${vars.service}
+      function:
+        name: http-trigger-nodejs14
+        description: 'hello world by serverless devs'
+        runtime: nodejs14
+        codeUri: ./build # 本地静态资源的地址
+```
+### 操作案例
+- 项目目录结构
+```
+- dist
+  - index.htm
+- s.yaml
+```
+- yaml配置如下
+```
+edition: 1.0.0        #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
+name: component-test   #  项目名称
+access: default # 密钥别名
+
+vars: # 全局变量
+  region: cn-hangzhou
+  service:
+    name: hello-world-service
+    description: 'hello world by serverless devs'
+
+services:
+  website:
+    component: fc
+    actions: # 自定义执行逻辑
+      pre-deploy: # 在deploy之前运行
+        - plugin: website-fc
+    props: #  组件的属性值
+      region: ${vars.region}
+      service: ${vars.service}
+      function:
+        name: http-trigger-nodejs14
+        description: 'hello world by serverless devs'
+        runtime: nodejs14
+        codeUri: ./dist
+        memorySize: 128
+        timeout: 60
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - GET
+      customDomains:
+        - domainName: auto
+          protocol: HTTP
+          routeConfigs:
+            - path: /*
+              methods:
+                - GET
 ```
 
-此时，选择最后的`Dev Template for Serverless Devs`，并按回车：
-
-```shell script
-$ s init
-
-🚀 Serverless Awesome: https://github.com/Serverless-Devs/package-awesome
-
-? Hello Serverless for Cloud Vendors Dev Template for Serverless Devs
-? Please select an Serverless-Devs Application (Use arrow keys or type to search)
-❯ Application Scaffolding 
-  Component Scaffolding 
-```
-
-此时，选择`Component Scaffolding`，并按回车，即可完成一个完整的Serverless Devs的Component项目的初始化，可以通过命令查看文件树：
-
-```shell script
-$ find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
-.
-|____LICENSE
-|____.signore
-|____example
-| |____s.yaml
-|____readme.md
-|____publish.yaml
-|____.gitignore
-|____package.json
-|____tsconfig.json
-|____src
-| |____common
-| | |____entity.ts
-| | |____logger.ts
-| |____index.ts
-```
-
-这其中：
-
-| 目录 | 含义 |
-| --- | --- | 
-| LICENSE | 项目默认的LICENSE，默认的LICENSE是遵循MIT开源协议的（推荐） | 
-| .signore | 项目发布时，可以选择的忽略文件，类似于npm发布是的`.npmignore`文件 | 
-| example | 该组件对应的测试应用 | 
-| publish.yaml | 项目所必须的文件，Serverless Devs Package的开发识别文档 |
-| .gitignore| 推送到Github的忽略文件 | 
-| package.json| Node.js的package.json，需要描述清楚组件的入口文件位置 |
-| tsconfig.json| Typescript的tsconfig.json，用来对TS项目进行描述等 |
-| src| 用户的代码目录 |
-| readme.md| 版本的描述，例如当前版本的更新内容等 |
-
-此时，开发者可以在src下完成业务代码的开发，由于默认的初始化项目是Typescript，所以开发完成业务代码还需要编译成Javascript（可以通过`npm run build`进行编译），在完成项目编译之后，还需要对项目进行`publish.yaml`文件的编写。完成之后，即可将项目发不到不同的源，以Github Registry为例，可以在Github创建一个`Public`的仓库，并将编译后的代码放到仓库，并发布一个版本。此时，就可以通过客户端获取到该应用。
+# 关于我们
+- Serverless Devs 工具：
+    - 仓库：[https://www.github.com/serverless-devs/serverless-devs](https://www.github.com/serverless-devs/serverless-devs)    
+      > 欢迎帮我们增加一个 :star2: 
+    - 官网：[https://www.serverless-devs.com/](https://www.serverless-devs.com/)
+- 阿里云函数计算组件：
+    - 仓库：[https://github.com/devsapp/fc](https://github.com/devsapp/fc)
+    - 帮助文档：[https://www.serverless-devs.com/fc/readme](https://www.serverless-devs.com/fc/readme)
+- 钉钉交流群：33947367    
