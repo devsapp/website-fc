@@ -21,5 +21,8 @@
   "scripts": {},
   "dependencies": {
     "@serverless-devs/core": "^0.1.32"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
   }
 }
