@@ -46,6 +46,7 @@ test('default index.html', async function () {
 
     expect(result.props.function.runtime).toBe("custom");
     expect(result.props.function.codeUri).toBe(path.join(__dirname, "../src/code"));
+    expect(result.props.function.caPort).toBe(9000);
     expect(result.props.function.customRuntimeConfig.command).toStrictEqual(["node"]);
     expect(result.props.function.customRuntimeConfig.args).toStrictEqual(["/code/index.js"]);
 

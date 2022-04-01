@@ -38,6 +38,7 @@ module.exports = async function index(inputs, args) {
           command: ["node"],
           args: ["/code/index.js"],
         },
+        caPort: 9000
       },
     },
   });
