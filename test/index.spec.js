@@ -85,11 +85,6 @@ test('custom index.htm', async function () {
         index: "index.htm"
     });
 
-    expect(result.props.function.runtime).toBe("custom");
-    expect(result.props.function.codeUri).toBe(path.join(__dirname, "../src/code"));
-    expect(result.props.function.customRuntimeConfig.command).toStrictEqual(["node"]);
-    expect(result.props.function.customRuntimeConfig.args).toStrictEqual(["/code/index.js"]);
-
     let generatedIndexContent = fs.readFileSync(path.join(__dirname, "../src/code/index.js")).toString();
     expect(generatedIndexContent.includes("index.htm")).toBeTruthy();
 });
