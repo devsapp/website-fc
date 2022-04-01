@@ -120,12 +120,8 @@ services:
 
 ### 工作原理
 
-website-fc 插件在把你的代码部署到云端前将 `runtime` 覆盖为了 `custom` 运行时, 生成了[一段简单的 Express 代码](src/template.js)到最终的 codeUri 中, 
-[并通过 `node` 启动了这个 Express HTTP 服务器](src/index.js).
-
-### 使用限制
-
-由于生成的 Express HTTP 服务器监听的是 FC custom 运行时默认的 9000 端口, 因此请不要在 s.yaml 中自定义 caPort 以免函数启动超时.
+website-fc 插件在把你的代码部署到云端前将 `runtime` 覆盖为了 `custom` 运行时, 将 `caPort` 覆盖为了 `9000`,
+以及生成了[一段简单的监听 9000 端口的 Express 代码](src/template.js)到最终的 codeUri 中, [并通过 `node` 启动了 Express HTTP 服务器](src/index.js).
 
 # 关于我们
 - Serverless Devs 工具：
