@@ -20,7 +20,7 @@
 
 ## 快速开始
 - [源码](https://github.com/devsapp/start-website/tree/master/vuepress/src)
-- [快速体验] `s init website-vuepress`
+- 快速体验: `s init website-vuepress`
 ### 插件作用
 #### 通过CDN+OSS部署
 通过[OSS组件](https://github.com/devsapp/oss)可以将静态资源快速部署到阿里云对象存储上，同时分发到CDN节点。不同地域的客户都能快速的访问对应的资源。
