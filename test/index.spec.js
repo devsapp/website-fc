@@ -23,7 +23,7 @@ test('path.configPath not present', async function () {
         }, {});
     } catch (e) {
         expect(e.code).toBe("ERR_INVALID_ARG_TYPE");
-        expect(e.message).toBe("The \"path\" argument must be of type string. Received undefined");
+        expect(e.message.toString().includes("The \"path\" argument must be of type string.")).toBeTruthy();
         catchTriggered = true;
     }
     expect(catchTriggered).toBeTruthy();
