@@ -98,7 +98,7 @@ services:
       function:
         name: http-trigger-nodejs14
         description: 'hello world by serverless devs'
-        runtime: nodejs14
+        runtime: nodejs14   # 任何一个 runtime 都可以
         codeUri: ./dist
         memorySize: 128
         timeout: 60
@@ -117,6 +117,11 @@ services:
               methods:
                 - GET
 ```
+
+### 工作原理
+
+website-fc 插件在把你的代码部署到云端前将 `runtime` 覆盖为了 `custom` 运行时, 生成了[一段简单的 Express 代码](src/template.js)到最终的 codeUri 中, 
+[并通过 `node` 启动了这个 Express HTTP 服务器](src/index.js).
 
 # 关于我们
 - Serverless Devs 工具：
