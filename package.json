@@ -18,7 +18,9 @@
     "Serverless-Tool",
     "Function Compute"
   ],
-  "scripts": {},
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@serverless-devs/core": "^0.1.32"
   },
