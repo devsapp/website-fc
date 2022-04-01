@@ -4,7 +4,7 @@ const path = require("path");
 
 let exampleDist = path.join(__dirname, "../example/dist");
 let exampleTmpl = path.join(__dirname, "../example/s.yaml");
-
+let outputDir = path.join(__dirname, "../src/code/public");
 
 test('props.function.codeUri not present', async function () {
     let result = await subject({}, {});
@@ -50,8 +50,26 @@ test('default index.html', async function () {
     expect(generatedIndexContent.includes("index.html")).toBeTruthy();
 });
 
+test('relative codeUri', async function () {
+    let originCodeUri = "./dist";
+    let inputs = {
+        path: {
+            configPath: exampleTmpl
+        },
+        props: {
+            function: {
+                codeUri: originCodeUri
+            }
+        }
+    };
+    await subject(inputs, {});
+
+    let joinedPath = path.join(path.dirname(inputs.path.configPath), originCodeUri);
+    expect(fs.readdirSync(outputDir)).toStrictEqual(fs.readdirSync(joinedPath));
+});
+
 test('custom index.htm', async function () {
-    let result = await subject({
+    await subject({
         path: {
             configPath: exampleTmpl
         },
