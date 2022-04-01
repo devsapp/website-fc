@@ -15,6 +15,9 @@
 - [快速开始](#快速开始)
   - [插件作用](#插件作用)
   - [使用教程](#使用教程)
+    - [快速上手](#快速上手)
+    - [自定义参数解析](#自定义参数解析)
+    - [自定义参数案例](#自定义参数案例)
   - [操作案例](#操作案例)
 - [关于我们](#关于我们)
 
@@ -42,6 +45,7 @@
 ![picture](https://img.alicdn.com/imgextra/i2/O1CN01mZSY8t1afYL39b670_!!6000000003357-2-tps-838-492.png)
 
 ### 使用教程
+#### 快速上手
 `website-fc`本质是针对[FC组件](https://serverless-devs.com/fc/readme)进行增强。
 还是遵循FC组件的[Yaml规范](https://serverless-devs.com/fc/yaml/readme)，区别在于
 1. 在执行部署之前声明对应的插件`website-fc`
@@ -67,6 +71,27 @@ services:
         runtime: nodejs14
         codeUri: ./build # 本地静态资源的地址
 ```
+
+#### 自定义参数解析
+
+| 参数名称 | 默认值 | 参数含义 |
+| --- | --- | --- |
+| index  | index.html |  自定义默认首页    |
+
+#### 自定义参数案例
+我们知道访问静态网站需要一个`html`的页面作为首页，比如您访问`http://www.serverless-devs.com/`首页的时候，其实实际访问的资源是`http://www.serverless-devs.com/index.html`。
+
+`website-fc`插件的默认行为也是会将您的默认首页指向`index.html`。如果您需要自定义您的首页为`demo.html`。只需要做如下声明
+```
+actions: # 自定义执行逻辑
+  pre-deploy: # 在deploy之前运行
+    - plugin: website-fc
+      args:
+        index: demo.html
+```
+
+可以参考[案例](https://github.com/devsapp/start-realwrold/tree/master/src)
+
 ### 操作案例
 - 项目目录结构
 ```
