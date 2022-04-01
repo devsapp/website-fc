@@ -1,4 +1,3 @@
-
 # Website-fc Plugin
 ![image](https://img.alicdn.com/imgextra/i1/O1CN01X9ucax1hNPxyaFLkb_!!6000000004265-2-tps-1810-686.png)
 <p align="center" class="flex justify-center">
@@ -15,18 +14,20 @@
 
 - [快速开始](#快速开始)
   - [插件作用](#插件作用)
-  - [插件使用](#插件使用)
+  - [使用教程](#使用教程)
   - [操作案例](#操作案例)
 - [关于我们](#关于我们)
 
 ## 快速开始
-
+- [源码](https://github.com/devsapp/start-website/tree/master/vuepress/src)
+- 快速体验: `s init website-vuepress`
 ### 插件作用
 #### 通过CDN+OSS部署
 通过[OSS组件](https://github.com/devsapp/oss)可以将静态资源快速部署到阿里云对象存储上，同时分发到CDN节点。不同地域的客户都能快速的访问对应的资源。
 
 ![Images](https://img.alicdn.com/imgextra/i4/O1CN01yajAOr1qZd4TVVwCk_!!6000000005510-2-tps-928-468.png)
 
+<!-- https://img.alicdn.com/imgextra/i3/O1CN01QaToWY1URuqznYbv0_!!6000000002515-2-tps-948-448.png -->
 
 上面的架构是比较推荐的最佳实践，能够保证高可用，和极致弹性，也是一个标准的Serverless架构。同时用户也能快速的访问它就近的资源，提供了最好的用户体验。
 
@@ -38,8 +39,9 @@
 - FullStack的框架，前后端都是一体化，前端部署在OSS有跨域的问题。如果要解决跨域的问题，又需要引入网关等组件，进一步带来了架构的复杂度
 - FaaS厂商一般都有免费额度，我的流量不高，部署在Faas足够用了
 
+![picture](https://img.alicdn.com/imgextra/i2/O1CN01mZSY8t1afYL39b670_!!6000000003357-2-tps-838-492.png)
 
-### 插件使用
+### 使用教程
 `website-fc`本质是针对[FC组件](https://serverless-devs.com/fc/readme)进行增强。
 还是遵循FC组件的[Yaml规范](https://serverless-devs.com/fc/yaml/readme)，区别在于
 1. 在执行部署之前声明对应的插件`website-fc`
