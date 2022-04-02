@@ -19,6 +19,7 @@
     - [自定义参数解析](#自定义参数解析)
     - [自定义参数案例](#自定义参数案例)
   - [操作案例](#操作案例)
+  - [最佳实践](#最佳实践)
 - [关于我们](#关于我们)
 
 ## 快速开始
@@ -142,6 +143,13 @@ services:
               methods:
                 - GET
 ```
+
+### 最佳实践
+
+以下是来自社区实践后总结出的最佳实践:
++ [如何使用 website-fc 插件部署静态网站到函数计算](https://blog.dengchao.fun/2022/04/02/deploy-static-website-with-website-fc-plugin/) by [DevDengChao](https://github.com/DevDengChao)
+
+欢迎大家通过 PR 投稿更多内容.
 
 ### 工作原理
 
