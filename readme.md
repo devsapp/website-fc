@@ -18,11 +18,11 @@
     - [快速上手](#快速上手)
     - [自定义参数](#自定义参数)
   - [操作案例](#操作案例)
-  - [高级教程][高级教程]
-    - [最佳实践](#最佳实践)
-    - [工作原理](#工作原理)
-- [插件开发](#插件开发)  
-  - [插件模型开发指南](https://www.serverless-devs.com/sdm/serverless_package_model/3.package_model#%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%9E%8B%E8%A7%84%E8%8C%83)
+  - [最佳实践](#最佳实践)
+  - [工作原理](#工作原理)
+<!-- - [插件开发](#插件开发)  
+  - [插件模型开发指南](https://www.serverless-devs.com/sdm/serverless_package_model/3.package_model#%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%9E%8B%E8%A7%84%E8%8C%83) -->
+  
 - [关于我们](#关于我们)
 
 ## 快速开始
@@ -147,10 +147,23 @@ services:
                 - GET
 ```
 
+### 最佳实践
+
+以下是来自社区实践后总结出的最佳实践:
++ [如何使用 website-fc 插件部署静态网站到函数计算](https://blog.dengchao.fun/2022/04/02/deploy-static-website-with-website-fc-plugin/) by [DevDengChao](https://github.com/DevDengChao)
+
+欢迎大家通过 PR 投稿更多内容.
+
 ### 工作原理
+#### 插件运行原理
+![image](https://img.alicdn.com/imgextra/i4/O1CN017Zfcf11XmvsJGfMeg_!!6000000002967-2-tps-1462-468.png)
+插件本质是上对[组件能力](https://www.serverless-devs.com/fc/readme)的增强，作用在组件的执行前(pre-deploy)以及执行后(post-deploy)。通过修改组件的入参(input)和出参(output)，提供能力。
+> 需要注意的是：上一个插件的出参(output)会作为下一个插件或者组件的入参。详情可查看
+[插件模型开发指南](https://www.serverless-devs.com/sdm/serverless_package_model/3.package_model#%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%9E%8B%E8%A7%84%E8%8C%83)
+
 
 website-fc 插件在把你的代码部署到云端前将 `runtime` 覆盖为了 `custom` 运行时, 将 `caPort` 覆盖为了 `9000`,
-以及生成了[一段简单的监听 9000 端口的 Express 代码](src/template.js)到最终的 codeUri 中, [并通过 `node` 启动了 Express HTTP 服务器](src/index.js).
+以及生成了[一段简单的监听 9000 端口的 Express 代码](https://github.com/devsapp/website-fc/blob/master/src/template.js)到最终的 codeUri 中, [并通过 `node` 启动了 Express HTTP 服务器](https://github.com/devsapp/website-fc/blob/master/src/index.js).
 
 # 关于我们
 - Serverless Devs 工具：
