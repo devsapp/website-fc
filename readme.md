@@ -159,7 +159,7 @@ services:
 ![image](https://img.alicdn.com/imgextra/i4/O1CN017Zfcf11XmvsJGfMeg_!!6000000002967-2-tps-1462-468.png)
 插件本质是上对[组件能力](https://www.serverless-devs.com/fc/readme)的增强，作用在组件的执行前(pre-deploy)以及执行后(post-deploy)。通过修改组件的入参(input)和出参(output)，提供能力。
 > 需要注意的是：上一个插件的出参(output)会作为下一个插件或者组件的入参。详情可查看
-[插件模型开发指南](https://www.serverless-devs.com/sdm/serverless_package_model/3.package_model#%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%9E%8B%E8%A7%84%E8%8C%83)
+[插件模型开发指南](https://www.serverless-devs.com/sdm/serverless_package_model/package_model#%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%9E%8B%E8%A7%84%E8%8C%83)
 
 
 website-fc 插件在把你的代码部署到云端前将 `runtime` 覆盖为了 `custom` 运行时, 将 `caPort` 覆盖为了 `9000`,
