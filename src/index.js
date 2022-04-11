@@ -1,6 +1,7 @@
 const core = require("@serverless-devs/core");
 const path = require("path");
-const { lodash, fse, rimraf } = core;
+const { lodash, fse, rimraf, Logger } = core;
+const logger = new Logger("website-fc");
 
 /**
  * Plugin 插件入口
@@ -10,6 +11,8 @@ const { lodash, fse, rimraf } = core;
  */
 
 module.exports = async function index(inputs, args) {
+  logger.debug(`inputs params: ${JSON.stringify(inputs)}`);
+  logger.debug(`args params: ${JSON.stringify(args)}`);
   const codeUri = lodash.get(inputs, "props.function.codeUri");
   if (lodash.isEmpty(codeUri)) return;
   const bashPath = path.dirname(lodash.get(inputs, "path.configPath"));
@@ -21,6 +24,9 @@ module.exports = async function index(inputs, args) {
   fse.ensureDirSync(publicPath);
   fse.copySync(newCodeUri, publicPath);
   const index = lodash.get(args, "index", "index.html");
+  if (!fse.existsSync(path.join(publicPath, index))) {
+    throw new Error(`${index} file not found.`);
+  }
   const indexData = fse.readFileSync(
     path.join(__dirname, "template.js"),
     "utf-8"
@@ -38,7 +44,7 @@ module.exports = async function index(inputs, args) {
           command: ["node"],
           args: ["/code/index.js"],
         },
-        caPort: 9000
+        caPort: 9000,
       },
     },
   });
