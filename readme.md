@@ -16,7 +16,7 @@
   - [插件作用](#插件作用)
   - [使用教程](#使用教程)
     - [快速上手](#快速上手)
-    - [自定义参数](#自定义参数)
+    - [参数说明](#参数说明)
     - [作用域](#作用域)
   - [操作案例](#操作案例)
   - [最佳实践](#最佳实践)
@@ -32,7 +32,6 @@
 
 ![Images](https://img.alicdn.com/imgextra/i4/O1CN01yajAOr1qZd4TVVwCk_!!6000000005510-2-tps-928-468.png)
 
-<!-- https://img.alicdn.com/imgextra/i3/O1CN01QaToWY1URuqznYbv0_!!6000000002515-2-tps-948-448.png -->
 
 上面的架构是比较推荐的最佳实践，能够保证高可用，和极致弹性，也是一个标准的Serverless架构。同时用户也能快速的访问它就近的资源，提供了最好的用户体验。
 
@@ -62,7 +61,7 @@ services:
     component: fc
     actions: # 自定义执行逻辑
       pre-deploy: # 在deploy之前运行
-        - plugin: ${path(..)}
+        - plugin: website-fc
     props: #  组件的属性值
       region: ${vars.region}
       service: ${vars.service}
@@ -72,13 +71,13 @@ services:
         runtime: nodejs14
         codeUri: ./build # 本地静态资源的地址
 ```
-#### 自定义参数
+#### 参数说明
 
 参数详情：
 
-| 参数名称 | 默认值 | 参数含义 |
-| --- | --- | --- |
-| index  | index.html |  自定义默认首页    |
+| 参数名称 | 默认值 | 参数含义 | 必填 |
+| --- | --- | --- | --- | --- |
+| index  | index.html |  自定义默认首页    | false |
 
 我们知道访问静态网站需要一个`html`的页面作为首页，比如您访问`http://www.serverless-devs.com/`首页的时候，其实实际访问的资源是`http://www.serverless-devs.com/index.html`。
 
