@@ -17,12 +17,10 @@
   - [使用教程](#使用教程)
     - [快速上手](#快速上手)
     - [自定义参数](#自定义参数)
+    - [作用域](#作用域)
   - [操作案例](#操作案例)
   - [最佳实践](#最佳实践)
   - [工作原理](#工作原理)
-<!-- - [插件开发](#插件开发)  
-  - [插件模型开发指南](https://www.serverless-devs.com/sdm/serverless_package_model/3.package_model#%E6%8F%92%E4%BB%B6%E6%A8%A1%E5%9E%8B%E8%A7%84%E8%8C%83) -->
-  
 - [关于我们](#关于我们)
 
 ## 快速开始
@@ -74,7 +72,6 @@ services:
         runtime: nodejs14
         codeUri: ./build # 本地静态资源的地址
 ```
-
 #### 自定义参数
 
 参数详情：
@@ -95,6 +92,14 @@ actions: # 自定义执行逻辑
 ```
 
 可以参考[案例](https://github.com/devsapp/start-realwrold/tree/master/src)
+
+#### 作用域
+`Website-fc`只能在`pre-deploy`阶段生效。
+```
+actions: # 自定义执行逻辑
+  pre-deploy: # 在deploy之前运行
+    - plugin: website-fc
+```
 
 ### 操作案例
 - 项目目录结构
