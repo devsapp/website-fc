@@ -76,8 +76,9 @@ services:
 参数详情：
 
 | 参数名称 | 默认值 | 参数含义 | 必填 |
-| --- | --- | --- | --- | --- |
+| --- | --- | --- |--- |
 | index  | index.html |  自定义默认首页    | false |
+
 
 我们知道访问静态网站需要一个`html`的页面作为首页，比如您访问`http://www.serverless-devs.com/`首页的时候，其实实际访问的资源是`http://www.serverless-devs.com/index.html`。
 
