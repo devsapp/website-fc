@@ -1,7 +1,8 @@
-const core = require("@serverless-devs/core");
+
+const lodash = require("lodash");
 const path = require("path");
-const { lodash, fse, rimraf, Logger } = core;
-const logger = new Logger("website-fc");
+const fse = require("fs-extra");
+const rimraf = require("rimraf");
 
 /**
  * Plugin 插件入口
@@ -10,16 +11,17 @@ const logger = new Logger("website-fc");
  * @return inputs
  */
 
-module.exports = async function index(inputs, args) {
+module.exports = async function index(inputs, args, logger) {
   logger.debug(`inputs params: ${JSON.stringify(inputs)}`);
   logger.debug(`args params: ${JSON.stringify(args)}`);
-  const codeUri = lodash.get(inputs, "props.function.codeUri");
+  const codeUri = lodash.get(inputs, "props.code");
   if (lodash.isEmpty(codeUri)) return;
-  const bashPath = path.dirname(lodash.get(inputs, "path.configPath"));
+  const bashPath = lodash.get(inputs, "cwd");
   const newCodeUri = path.isAbsolute(codeUri)
     ? codeUri
     : path.join(bashPath, codeUri);
   const publicPath = path.join(__dirname, "./code/public");
+
   rimraf.sync(publicPath);
   fse.ensureDirSync(publicPath);
   fse.copySync(newCodeUri, publicPath);
@@ -37,15 +39,13 @@ module.exports = async function index(inputs, args) {
   );
   return lodash.merge(inputs, {
     props: {
-      function: {
-        runtime: "custom",
-        codeUri: path.join(__dirname, "./code"), // 支持ZIP能力
-        customRuntimeConfig: {
-          command: ["node"],
-          args: ["/code/index.js"],
-        },
-        caPort: 9000,
+      runtime: "custom",
+      code: path.join(__dirname, "./code"), // 支持ZIP能力
+      customRuntimeConfig: {
+        command: ["node"],
+        args: ["/code/index.js"],
       },
+      caPort: 9000,
     },
   });
 };
