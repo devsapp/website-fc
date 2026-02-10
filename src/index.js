@@ -17,9 +17,16 @@ module.exports = async function index(inputs, args, logger) {
   const codeUri = lodash.get(inputs, "props.code");
   if (lodash.isEmpty(codeUri)) throw new Error("props.code not found.");
   const bashPath = lodash.get(inputs, "cwd");
-  const newCodeUri = path.isAbsolute(codeUri)
-    ? codeUri
-    : path.join(bashPath, codeUri);
+  let newCodeUri = path.isAbsolute(codeUri)
+      ? codeUri
+      : path.join(bashPath, codeUri);
+
+  // Resolve symbolic link to actual directory
+  const stats = fse.lstatSync(newCodeUri);
+  if (stats.isSymbolicLink()) {
+    newCodeUri = fse.realpathSync(newCodeUri);
+    logger.debug(`Resolved symbolic link to actual path: ${newCodeUri}`);
+  }
   const publicPath = path.join(__dirname, "./code/public");
 
   rimraf.sync(publicPath);

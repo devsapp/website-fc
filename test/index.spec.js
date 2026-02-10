@@ -1,5 +1,6 @@
 let subject = require("../src/index");
 let fs = require("fs");
+const fse = require("fs-extra");
 const path = require("path");
 
 let exampleDir = path.join(__dirname, "../example");
@@ -72,6 +73,40 @@ test('custom index.htm', async function () {
 
     let generatedIndexContent = fs.readFileSync(path.join(__dirname, "../src/code/index.js")).toString();
     expect(generatedIndexContent.includes("index.htm")).toBeTruthy();
+});
+
+test('props.code is a symlink', async function () {
+    const symlinkPath = path.join(__dirname, "../example/dist-link");
+    // Clean up symlink if it exists from a previous test run
+    if (fse.existsSync(symlinkPath)) {
+        fse.removeSync(symlinkPath);
+    }
+    // Create a junction (works without admin privileges on Windows) or symlink
+    fse.ensureSymlinkSync(exampleDist, symlinkPath, 'junction');
+
+    const mockLogger = { debug: jest.fn() };
+
+    try {
+        let result = await subject({
+            cwd: exampleDir,
+            props: {
+                code: symlinkPath
+            }
+        }, {}, mockLogger);
+
+        // content are copied from the resolved actual directory to outputDir
+        expect(fs.readdirSync(outputDir)).toStrictEqual(fs.readdirSync(exampleDist));
+
+        expect(result.props.code).toBe(path.join(__dirname, "../src/code"));
+
+        // Verify that the symlink was resolved and logger was called
+        expect(mockLogger.debug).toHaveBeenCalledWith(
+            expect.stringContaining("Resolved symbolic link to actual path:")
+        );
+    } finally {
+        // Clean up symlink after test
+        fse.removeSync(symlinkPath);
+    }
 });
 
 test('should prioritize user-provided runtime over default', async function () {
