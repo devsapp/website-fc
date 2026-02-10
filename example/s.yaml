@@ -1,42 +1,47 @@
-edition: 1.0.0        #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
+edition: 3.0.0         #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
 name: component-test   #  项目名称
-access: default # 密钥别名
+access: default        # 密钥别名
 
 vars: # 全局变量
   region: cn-hangzhou
-  service:
-    name: hello-world-service
-    description: 'hello world by serverless devs'
+  functionName: website-fc-v3
 
-services:
+resources:
   website:
-    component: fc
+    component: fc3
     actions: # 自定义执行逻辑
       pre-deploy: # 在deploy之前运行
-        - plugin: ${path(..)}
+        - plugin: ${path('..')}
           args: 
             index: demo.html
-    props: #  组件的属性值
+    props: # 组件的属性值
       region: ${vars.region}
-      service: ${vars.service}
-      function:
-        name: http-trigger-nodejs14
-        description: 'hello world by serverless devs'
-        runtime: nodejs14
-        codeUri: ./dist
-        memorySize: 128
-        timeout: 60
-      triggers:
-        - name: httpTrigger
-          type: http
-          config:
-            authType: anonymous
-            methods:
-              - GET
-      customDomains:
-        - domainName: auto
-          protocol: HTTP
-          routeConfigs:
-            - path: /*
-              methods:
-                - GET
+      functionName: ${vars.functionName}
+      description: "Serverless Devs Website hexo Function"
+      timeout: 30
+      memorySize: 512
+      code: ./dist
+      runtime: custom
+      # triggers:
+      #   - triggerName: httpTrigger
+      #     triggerType: http
+      #     triggerConfig:
+      #       authType: anonymous
+      #       methods:
+      #         - GET
+      #         - POST
+      #         - PUT
+      #         - DELETE
+  fc3_domain_0:
+    component: fc3-domain
+    props:
+      region: ${vars.region}
+      domainName: auto
+      protocol: HTTP
+      routeConfig:
+        routes:
+          - path: /*
+            functionName: ${vars.functionName}
+
+
+

@@ -22,7 +22,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@serverless-devs/core": "^0.1.32"
+    "fs-extra": "^11.2.0",
+    "lodash": "^4.17.21",
+    "rimraf": "^5.0.5"
   },
   "devDependencies": {
     "jest": "^27.5.1"
