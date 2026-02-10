@@ -15,7 +15,7 @@ module.exports = async function index(inputs, args, logger) {
   logger?.debug(`inputs params: ${JSON.stringify(inputs)}`);
   logger?.debug(`args params: ${JSON.stringify(args)}`);
   const codeUri = lodash.get(inputs, "props.code");
-  if (lodash.isEmpty(codeUri)) return;
+  if (lodash.isEmpty(codeUri)) throw new Error("props.code not found.");
   const bashPath = lodash.get(inputs, "cwd");
   const newCodeUri = path.isAbsolute(codeUri)
     ? codeUri
