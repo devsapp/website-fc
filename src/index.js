@@ -12,14 +12,21 @@ const rimraf = require("rimraf");
  */
 
 module.exports = async function index(inputs, args, logger) {
-  logger.debug(`inputs params: ${JSON.stringify(inputs)}`);
-  logger.debug(`args params: ${JSON.stringify(args)}`);
+  logger?.debug(`inputs params: ${JSON.stringify(inputs)}`);
+  logger?.debug(`args params: ${JSON.stringify(args)}`);
   const codeUri = lodash.get(inputs, "props.code");
-  if (lodash.isEmpty(codeUri)) return;
+  if (lodash.isEmpty(codeUri)) throw new Error("props.code not found.");
   const bashPath = lodash.get(inputs, "cwd");
-  const newCodeUri = path.isAbsolute(codeUri)
-    ? codeUri
-    : path.join(bashPath, codeUri);
+  let newCodeUri = path.isAbsolute(codeUri)
+      ? codeUri
+      : path.join(bashPath, codeUri);
+
+  // Resolve symbolic link to actual directory
+  const stats = fse.lstatSync(newCodeUri);
+  if (stats.isSymbolicLink()) {
+    newCodeUri = fse.realpathSync(newCodeUri);
+    logger.debug(`Resolved symbolic link to actual path: ${newCodeUri}`);
+  }
   const publicPath = path.join(__dirname, "./code/public");
 
   rimraf.sync(publicPath);
@@ -37,15 +44,16 @@ module.exports = async function index(inputs, args, logger) {
     path.join(__dirname, "./code/index.js"),
     lodash.replace(indexData, "$index", index)
   );
+  const runtime = lodash.get(args, "runtime", "custom");
   return lodash.merge(inputs, {
     props: {
-      runtime: "custom",
-      code: path.join(__dirname, "./code"), // 支持ZIP能力
-      customRuntimeConfig: {
-        command: ["node"],
-        args: ["/code/index.js"],
-      },
-      caPort: 9000,
+        runtime,
+        code: path.join(__dirname, "./code"), // 支持ZIP能力
+        customRuntimeConfig: {
+          command: ["node"],
+          args: ["/code/index.js"],
+        },
+        caPort: 9000,
     },
   });
 };

@@ -1,54 +1,48 @@
 let subject = require("../src/index");
 let fs = require("fs");
+const fse = require("fs-extra");
 const path = require("path");
 
+let exampleDir = path.join(__dirname, "../example");
 let exampleDist = path.join(__dirname, "../example/dist");
 let exampleTmpl = path.join(__dirname, "../example/s.yaml");
 let outputDir = path.join(__dirname, "../src/code/public");
 
-test('props.function.codeUri not present', async function () {
-    let result = await subject({}, {});
-    expect(result).toBeUndefined();
+test('props.codeUri not present', async function () {
+    try {
+        await subject({}, {});
+        fail();
+    } catch (e) {
+        expect(e.message).toBe("props.code not found.");
+    }
+
 });
 
-test('path.configPath not present', async function () {
-    let catchTriggered = false;
-    try {
-        await subject({
-            props: {
-                function: {
-                    codeUri: exampleDist
-                }
-            }
-        }, {});
-    } catch (e) {
-        expect(e.code).toBe("ERR_INVALID_ARG_TYPE");
-        expect(e.message.toString().includes("The \"path\" argument must be of type string.")).toBeTruthy();
-        catchTriggered = true;
-    }
-    expect(catchTriggered).toBeTruthy();
+test('path.cwd not present', async function () {
+    let result = await subject({
+        props: {
+            code: exampleDist
+        }
+    }, {});
+    expect(result.props.code).toBe(path.join(__dirname, "../src/code"));
 });
 
 test('default index.html', async function () {
     let result = await subject({
-        path: {
-            configPath: exampleTmpl
-        },
+        cwd: exampleDir,
         props: {
-            function: {
-                codeUri: exampleDist
-            }
+            code: exampleDist
         }
     }, {});
 
     // content are copied from exampleDist to outputDir
     expect(fs.readdirSync(outputDir)).toStrictEqual(fs.readdirSync(exampleDist));
 
-    expect(result.props.function.runtime).toBe("custom");
-    expect(result.props.function.codeUri).toBe(path.join(__dirname, "../src/code"));
-    expect(result.props.function.caPort).toBe(9000);
-    expect(result.props.function.customRuntimeConfig.command).toStrictEqual(["node"]);
-    expect(result.props.function.customRuntimeConfig.args).toStrictEqual(["/code/index.js"]);
+    expect(result.props.runtime).toBe("custom");
+    expect(result.props.code).toBe(path.join(__dirname, "../src/code"));
+    expect(result.props.caPort).toBe(9000);
+    expect(result.props.customRuntimeConfig.command).toStrictEqual(["node"]);
+    expect(result.props.customRuntimeConfig.args).toStrictEqual(["/code/index.js"]);
 
     let generatedIndexContent = fs.readFileSync(path.join(__dirname, "../src/code/index.js")).toString();
     expect(generatedIndexContent.includes("index.html")).toBeTruthy();
@@ -57,30 +51,21 @@ test('default index.html', async function () {
 test('relative codeUri', async function () {
     let originCodeUri = "./dist";
     let inputs = {
-        path: {
-            configPath: exampleTmpl
-        },
+        cwd: exampleDir,
         props: {
-            function: {
-                codeUri: originCodeUri
-            }
+            code: originCodeUri
         }
     };
-    await subject(inputs, {});
+    let result = await subject(inputs, {});
 
-    let joinedPath = path.join(path.dirname(inputs.path.configPath), originCodeUri);
-    expect(fs.readdirSync(outputDir)).toStrictEqual(fs.readdirSync(joinedPath));
+    expect(result.props.code).toBe(path.join(__dirname, "../src/code"));
 });
 
 test('custom index.htm', async function () {
     await subject({
-        path: {
-            configPath: exampleTmpl
-        },
+        cwd: exampleDir,
         props: {
-            function: {
-                codeUri: exampleDist
-            }
+            code: exampleDist
         }
     }, {
         index: "index.htm"
@@ -88,6 +73,55 @@ test('custom index.htm', async function () {
 
     let generatedIndexContent = fs.readFileSync(path.join(__dirname, "../src/code/index.js")).toString();
     expect(generatedIndexContent.includes("index.htm")).toBeTruthy();
+});
+
+test('props.code is a symlink', async function () {
+    const symlinkPath = path.join(__dirname, "../example/dist-link");
+    // Clean up symlink if it exists from a previous test run
+    if (fse.existsSync(symlinkPath)) {
+        fse.removeSync(symlinkPath);
+    }
+    // Create a junction (works without admin privileges on Windows) or symlink
+    fse.ensureSymlinkSync(exampleDist, symlinkPath, 'junction');
+
+    const mockLogger = { debug: jest.fn() };
+
+    try {
+        let result = await subject({
+            cwd: exampleDir,
+            props: {
+                code: symlinkPath
+            }
+        }, {}, mockLogger);
+
+        // content are copied from the resolved actual directory to outputDir
+        expect(fs.readdirSync(outputDir)).toStrictEqual(fs.readdirSync(exampleDist));
+
+        expect(result.props.code).toBe(path.join(__dirname, "../src/code"));
+
+        // Verify that the symlink was resolved and logger was called
+        expect(mockLogger.debug).toHaveBeenCalledWith(
+            expect.stringContaining("Resolved symbolic link to actual path:")
+        );
+    } finally {
+        // Clean up symlink after test
+        fse.removeSync(symlinkPath);
+    }
+});
+
+test('should prioritize user-provided runtime over default', async function () {
+    let result = await subject({
+        cwd: exampleDir,
+        props: {
+            code: exampleDist
+        }
+    }, {
+        runtime: "custom.debian11"
+    });
+
+    expect(result.props.runtime).toBe("custom.debian11");
+    expect(result.props.code).toBe(path.join(__dirname, "../src/code"));
+    expect(result.props.caPort).toBe(9000);
 });
 
 
